@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "ts-add-js-extension": "^1.6.5"
+  },
+  "scripts": {
+    "build": "tsc && ts-add-js-extension --dir=build"
+  }
+}
