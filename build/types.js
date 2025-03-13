@@ -1,9 +1,25 @@
 // Класс Product, реализующий базовый интерфейс
 export class ProductClass {
-    constructor(name, price, imagePath) {
+    constructor(name, // Свойство
+    price, // Свойство
+    imagePath // Свойство
+    ) {
         this.name = name;
         this.price = price;
         this.imagePath = imagePath;
+        ProductClass.instanceCount++;
+    }
+    static getInstanceCount() {
+        return ProductClass.instanceCount;
+    }
+}
+ProductClass.instanceCount = 0;
+// Класс Clothing, реализующий интерфейс Clothing
+export class ClothingClass extends ProductClass {
+    constructor(name, price, imagePath, material, color) {
+        super(name, price, imagePath);
+        this.material = material;
+        this.color = color;
     }
     displayInfo(infoDiv) {
         infoDiv.classList.add('product');
@@ -19,19 +35,7 @@ export class ProductClass {
         image.src = this.imagePath;
         image.alt = this.name;
         infoDiv.appendChild(image);
-    }
-}
-// Класс Clothing, реализующий интерфейс Clothing
-export class ClothingClass extends ProductClass {
-    constructor(name, price, imagePath, material, color) {
-        super(name, price, imagePath);
-        this.material = material;
-        this.color = color;
-    }
-    displayInfo(infoDiv) {
-        super.displayInfo(infoDiv); // Выводим общую информацию
         const material = document.createElement('p');
-        material.classList.add('product-info');
         material.innerHTML = `<strong>Material:</strong> ${this.material}`;
         infoDiv.appendChild(material);
         const color = document.createElement('p');
@@ -98,12 +102,38 @@ export class FootwearClass extends ProductClass {
         this.isSport = isSport;
     }
     displayInfo(infoDiv) {
-        super.displayInfo(infoDiv); // Выводим общую информацию
+        infoDiv.classList.add('product');
+        const productInfoDiv = document.createElement('div');
+        productInfoDiv.classList.add('product-info');
+        const name = document.createElement('h2');
+        name.textContent = this.name;
+        infoDiv.appendChild(name);
+        const price = document.createElement('p');
+        price.innerHTML = `<strong>Price:</strong> $${this.price.toFixed(2)}`;
+        infoDiv.appendChild(price);
+        const image = document.createElement('img');
+        image.src = this.imagePath;
+        image.alt = this.name;
+        infoDiv.appendChild(image);
         const shoeSize = document.createElement('p');
         shoeSize.innerHTML = `<strong>Shoe Size:</strong> ${this.shoeSize}`;
         infoDiv.appendChild(shoeSize);
         const isSport = document.createElement('p');
         isSport.innerHTML = `<strong>Sport:</strong> ${this.isSport ? "Yes" : "No"}`;
         infoDiv.appendChild(isSport);
+    }
+}
+const productRegistry = {
+    ClothingClass: ClothingClass,
+    FootwearClass: FootwearClass,
+    // Добавьте другие классы по аналогии
+};
+export class ProductFactory {
+    static createProduct(type, ...args) {
+        const ProductClass = productRegistry[type];
+        if (!ProductClass) {
+            throw new Error(`Unknown product type: ${type}`);
+        }
+        return new ProductClass(...args);
     }
 }

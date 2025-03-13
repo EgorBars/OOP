@@ -1,4 +1,4 @@
-import { ProductClass, FootwearClass, OuterwearClass, ClothingClass } from './types';
+import { ProductClass, FootwearClass, OuterwearClass, ClothingClass, LowerClothingClass, UpperClothingClass } from './types';
 export const products: ProductClass[] = [
     new OuterwearClass(
         "Winter Jacket",
@@ -62,5 +62,22 @@ export const products: ProductClass[] = [
         "Collar",
         true,
         true
+    ),new LowerClothingClass(
+        "trousers",
+        100.00,
+        "../img/Jacket.jpg",
+        "Poluester",
+        "black",
+        150.00,
+        64.00
+    ),
+    new UpperClothingClass(
+        "trousers",
+        100.00,
+        "../img/Jacket.jpg",
+        "Poluester",
+        "black",
+        "long",
+        "high"
     )
 ];

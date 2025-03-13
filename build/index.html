@@ -10,7 +10,37 @@
     <h1>Clothing App</h1>
     <button id="show-products">Show Products</button>
     <div id="product-list" class="product-container"></div>
+    <form id="productForm">
+        <!-- Общие поля для всех продуктов -->
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="number" id="price" placeholder="Price" required>
+        <input type="text" id="imagePath" placeholder="Image Path" required>
 
+        <!-- Выбор типа продукта -->
+        <select id="productType" required>
+            <option value="">Select Product Type</option>
+            <option value="ClothingClass">Clothing</option>
+            <option value="FootwearClass">Footwear</option>
+            <!-- Добавьте другие типы продуктов -->
+        </select>
+
+        <!-- Динамические поля для ClothingClass -->
+        <div id="clothingFields" class="dynamic-fields" style="display: none;">
+            <input type="text" id="material" placeholder="Material">
+            <input type="text" id="color" placeholder="Color">
+        </div>
+
+        <!-- Динамические поля для FootwearClass -->
+        <div id="footwearFields" class="dynamic-fields" style="display: none;">
+            <input type="number" id="shoeSize" placeholder="Shoe Size">
+            <label>
+                <input type="checkbox" id="isSport"> Is Sport
+            </label>
+        </div>
+
+        <button type="submit">Create Product</button>
+    </form>
+    <div id="output"></div>
     <script type="module" src="script.js"></script>
 </body>
 </html>

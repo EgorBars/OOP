@@ -6,31 +6,23 @@ export interface Product {
 }
 
 // Класс Product, реализующий базовый интерфейс
-export class ProductClass implements Product {
+export abstract class ProductClass implements Product {
+    private static instanceCount: number = 0;
+
     constructor(
-        public name: string,
-        public price: number,
-        public imagePath: string
-    ) {}
-
-    displayInfo(infoDiv: HTMLDivElement): void {
-        infoDiv.classList.add('product');
-        const productInfoDiv = document.createElement('div');
-        productInfoDiv.classList.add('product-info');
-
-        const name = document.createElement('h2');
-        name.textContent = this.name;
-        infoDiv.appendChild(name);
-
-        const price = document.createElement('p');
-        price.innerHTML = `<strong>Price:</strong> $${this.price.toFixed(2)}`;
-        infoDiv.appendChild(price);
-
-        const image = document.createElement('img');
-        image.src = this.imagePath;
-        image.alt = this.name;
-        infoDiv.appendChild(image);
+        public name: string, // Свойство
+        public price: number, // Свойство
+        public imagePath: string // Свойство
+    ) {
+        ProductClass.instanceCount++;
     }
+
+    static getInstanceCount(): number {
+        return ProductClass.instanceCount;
+    }
+
+    // Абстрактный метод (без реализации)
+    abstract displayInfo(infoDiv: HTMLDivElement): void;
 }
 
 // Класс Clothing (наследуется от Product)
@@ -52,7 +44,23 @@ export class ClothingClass extends ProductClass implements Clothing {
     }
 
     displayInfo(infoDiv: HTMLDivElement): void {
-        super.displayInfo(infoDiv); // Выводим общую информацию
+        infoDiv.classList.add('product');
+        const productInfoDiv = document.createElement('div');
+        productInfoDiv.classList.add('product-info');
+
+        const name = document.createElement('h2');
+        name.textContent = this.name;
+        infoDiv.appendChild(name);
+
+        const price = document.createElement('p');
+        price.innerHTML = `<strong>Price:</strong> $${this.price.toFixed(2)}`;
+        infoDiv.appendChild(price);
+
+        const image = document.createElement('img');
+        image.src = this.imagePath;
+        image.alt = this.name;
+        infoDiv.appendChild(image);
+
         const material = document.createElement('p');
         material.innerHTML = `<strong>Material:</strong> ${this.material}`;
         infoDiv.appendChild(material);
@@ -178,7 +186,23 @@ export class FootwearClass extends ProductClass implements Footwear {
     }
 
     displayInfo(infoDiv: HTMLDivElement): void {
-        super.displayInfo(infoDiv); // Выводим общую информацию
+        infoDiv.classList.add('product');
+        const productInfoDiv = document.createElement('div');
+        productInfoDiv.classList.add('product-info');
+
+        const name = document.createElement('h2');
+        name.textContent = this.name;
+        infoDiv.appendChild(name);
+
+        const price = document.createElement('p');
+        price.innerHTML = `<strong>Price:</strong> $${this.price.toFixed(2)}`;
+        infoDiv.appendChild(price);
+
+        const image = document.createElement('img');
+        image.src = this.imagePath;
+        image.alt = this.name;
+        infoDiv.appendChild(image);
+
         const shoeSize = document.createElement('p');
         shoeSize.innerHTML = `<strong>Shoe Size:</strong> ${this.shoeSize}`;
         infoDiv.appendChild(shoeSize);
@@ -186,5 +210,19 @@ export class FootwearClass extends ProductClass implements Footwear {
         const isSport = document.createElement('p');
         isSport.innerHTML = `<strong>Sport:</strong> ${this.isSport ? "Yes" : "No"}`;
         infoDiv.appendChild(isSport);
+    }
+}
+const productRegistry: Record<string, new (...args: any[]) => ProductClass> = {
+    ClothingClass: ClothingClass,
+    FootwearClass: FootwearClass,
+    // Добавьте другие классы по аналогии
+};
+export class ProductFactory {
+    static createProduct(type: string, ...args: any[]): ProductClass {
+        const ProductClass = productRegistry[type];
+        if (!ProductClass) {
+            throw new Error(`Unknown product type: ${type}`);
+        }
+        return new ProductClass(...args);
     }
 }
