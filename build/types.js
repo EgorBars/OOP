@@ -126,8 +126,14 @@ export class FootwearClass extends ProductClass {
 const productRegistry = {
     ClothingClass: ClothingClass,
     FootwearClass: FootwearClass,
+    UpperClothingClass: UpperClothingClass,
+    LowerClothingClass: LowerClothingClass,
+    OuterwearClass: OuterwearClass,
     // Добавьте другие классы по аналогии
 };
+export function getAvailableProductTypes() {
+    return Object.keys(productRegistry);
+}
 export class ProductFactory {
     static createProduct(type, ...args) {
         const ProductClass = productRegistry[type];
@@ -135,5 +141,37 @@ export class ProductFactory {
             throw new Error(`Unknown product type: ${type}`);
         }
         return new ProductClass(...args);
+    }
+}
+export class Command {
+    constructor(products) {
+        this.products = products;
+        this.history = [];
+        this.future = [];
+        this.history.push([...products]); // Сохраняем начальное состояние
+    }
+    execute(action) {
+        action();
+        this.history.push([...this.products]); // Сохраняем новое состояние
+        this.future = [];
+        console.log('History after execute:', this.history); // Логируем историю
+    }
+    undo() {
+        if (this.history.length > 1) {
+            this.future.push([...this.products]);
+            this.history.pop();
+            this.products.splice(0, this.products.length, ...this.history[this.history.length - 1]);
+            console.log('History after undo:', this.history); // Логируем историю
+        }
+    }
+    redo() {
+        if (this.future.length > 0) {
+            const nextState = this.future.pop();
+            if (nextState) {
+                this.history.push([...nextState]);
+                this.products.splice(0, this.products.length, ...nextState);
+                console.log('History after redo:', this.history); // Логируем историю
+            }
+        }
     }
 }

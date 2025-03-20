@@ -10,6 +10,13 @@
     <h1>Clothing App</h1>
     <button id="show-products">Show Products</button>
     <div id="product-list" class="product-container"></div>
+
+    <div id="editForm" style="display: none;">
+        <input type="text" id="editName" placeholder="Name">
+        <input type="number" id="editPrice" placeholder="Price">
+        <input type="text" id="editImagePath" placeholder="Image Path">
+        <button id="saveEdit">Save Changes</button>
+    </div>
     <form id="productForm">
         <!-- Общие поля для всех продуктов -->
         <input type="text" id="name" placeholder="Name" required>
@@ -19,8 +26,6 @@
         <!-- Выбор типа продукта -->
         <select id="productType" required>
             <option value="">Select Product Type</option>
-            <option value="ClothingClass">Clothing</option>
-            <option value="FootwearClass">Footwear</option>
             <!-- Добавьте другие типы продуктов -->
         </select>
 
@@ -40,6 +45,8 @@
 
         <button type="submit">Create Product</button>
     </form>
+    <button id="undo">Undo</button>
+    <button id="redo">Redo</button>
     <div id="output"></div>
     <script type="module" src="script.js"></script>
 </body>

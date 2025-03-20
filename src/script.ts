@@ -1,5 +1,7 @@
 import { products } from './data';
-import { ProductClass, ProductFactory } from './types';
+import { ProductClass, ProductFactory, getAvailableProductTypes, Command } from './types';
+
+const command = new Command(products);
 
 // Ждем загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,11 +21,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const undoButton = document.getElementById('undo');
+    const redoButton = document.getElementById('redo');
+
+    if (undoButton && redoButton) {
+        undoButton.addEventListener('click', () => {
+            command.undo();
+            showProductsButton?.click(); // Обновляем список
+        });
+
+        redoButton.addEventListener('click', () => {
+            command.redo();
+            showProductsButton?.click(); // Обновляем список
+        });
+    }
+
+    const productForm = document.getElementById('productForm') as HTMLFormElement;
     const productTypeSelect = document.getElementById('productType') as HTMLSelectElement;
+
     const clothingFields = document.getElementById('clothingFields') as HTMLDivElement;
     const footwearFields = document.getElementById('footwearFields') as HTMLDivElement;
 
     if (productTypeSelect && clothingFields && footwearFields) {
+        const availableTypes = getAvailableProductTypes();
+        availableTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            productTypeSelect.appendChild(option);
+        });
         productTypeSelect.addEventListener('change', () => {
             const selectedType = productTypeSelect.value;
 
@@ -39,8 +65,57 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    if (productList && showProductsButton) {
+        showProductsButton.addEventListener('click', () => {
+            productList.innerHTML = '';
 
-    const productForm = document.getElementById('productForm') as HTMLFormElement;
+            products.forEach((product, index) => {
+                const productDiv = document.createElement('div');
+                product.displayInfo(productDiv);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => {
+                    command.execute(() => {
+                        products.splice(index, 1);
+                    });
+                    showProductsButton.click(); // Обновляем список
+                });
+                const editForm = document.getElementById('editForm') as HTMLDivElement;
+                const saveEditButton = document.getElementById('saveEdit') as HTMLButtonElement;
+                productDiv.appendChild(deleteButton);
+                productList.appendChild(productDiv);
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => {
+                    // Заполняем форму редактирования
+                    (document.getElementById('editName') as HTMLInputElement).value = product.name;
+                    (document.getElementById('editPrice') as HTMLInputElement).value = product.price.toString();
+                    (document.getElementById('editImagePath') as HTMLInputElement).value = product.imagePath;
+
+                    // Показываем форму редактирования
+                    editForm.style.display = 'block';
+
+                    // Обработчик для кнопки Save
+                    saveEditButton.onclick = () => {
+                        command.execute(() => {
+                            product.name = (document.getElementById('editName') as HTMLInputElement).value;
+                            product.price = parseFloat((document.getElementById('editPrice') as HTMLInputElement).value);
+                            product.imagePath = (document.getElementById('editImagePath') as HTMLInputElement).value;
+                        });
+                    
+                        editForm.style.display = 'none';
+                        showProductsButton.click();
+                    };
+                });
+                productDiv.appendChild(editButton);
+                productList.appendChild(productDiv);
+            });
+
+        });
+    }
+   
+
 
     if (productForm) {
         productForm.addEventListener('submit', (event) => {
@@ -66,7 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 throw new Error('Unknown product type');
             }
-            products.push(product);
+            command.execute(() => {
+                products.push(product);
+            });
 
             // Выводим информацию о продукте
             const outputDiv = document.getElementById('output') as HTMLDivElement;
